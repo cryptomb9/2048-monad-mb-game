@@ -125,6 +125,7 @@ function gameOver() {
   return true;
 }
 
+// --- Keyboard controls ---
 document.addEventListener("keydown", async (e) => {
   let moved = false;
   let direction = "";
@@ -153,10 +154,70 @@ document.addEventListener("keydown", async (e) => {
     drawGrid();
     updateScore();
     if (gameOver()) {
-      saveScore(score);  // <-- save the score to leaderboard when game ends
+      saveScore(score);  // save to leaderboard on game over
       alert("Game Over! Score: " + score);
     }
-    await sendMove(direction); // send to blockchain
+    await sendMove(direction);
+  }
+});
+
+// --- Swipe controls for mobile ---
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+const minSwipeDistance = 30;
+
+container.addEventListener('touchstart', (e) => {
+  const touch = e.changedTouches[0];
+  touchStartX = touch.screenX;
+  touchStartY = touch.screenY;
+});
+
+container.addEventListener('touchend', async (e) => {
+  const touch = e.changedTouches[0];
+  touchEndX = touch.screenX;
+  touchEndY = touch.screenY;
+
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  if (Math.abs(deltaX) < minSwipeDistance && Math.abs(deltaY) < minSwipeDistance) {
+    return; // swipe too short, ignore
+  }
+
+  let moved = false;
+  let direction = '';
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // horizontal swipe
+    if (deltaX > 0) {
+      moved = moveRight();
+      direction = 'right';
+    } else {
+      moved = moveLeft();
+      direction = 'left';
+    }
+  } else {
+    // vertical swipe
+    if (deltaY > 0) {
+      moved = moveDown();
+      direction = 'down';
+    } else {
+      moved = moveUp();
+      direction = 'up';
+    }
+  }
+
+  if (moved) {
+    addRandomTile();
+    drawGrid();
+    updateScore();
+    if (gameOver()) {
+      saveScore(score);
+      alert("Game Over! Score: " + score);
+    }
+    await sendMove(direction);
   }
 });
 
