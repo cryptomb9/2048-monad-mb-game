@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>2048 Game</title>
+ <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ <h1>2048 Game</h1>
+ <div id="score">Score: 0</div>
+ <button id="connect-wallet">Connect Wallet</button>
+ <button id="reset-game">Reset Game</button>
+ <div id="game-container"></div>
+ <p id="status">🔌 Not connected</p>
+
+ <!-- Load ethers first -->
+ <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+
+ <!-- Then load your wallet/game logic -->
+ <script src="web3.min.js"></script>
+ <script src="game.js"></script>
+</body>
+</html>
