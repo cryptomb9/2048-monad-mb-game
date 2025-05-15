@@ -6,29 +6,7 @@ const container = document.getElementById("game-container");
 const scoreDiv = document.getElementById("score");
 const connectBtn = document.getElementById("connect-wallet");
 const resetBtn = document.getElementById("reset-game");
-
-if (!container || !scoreDiv || !connectBtn || !resetBtn) {
-  console.error("DOM elements missing!");
-}
-
-connectBtn.onclick = async () => {
-  try {
-    if (typeof window.ethereum !== "undefined") {
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      connectBtn.disabled = true;
-      connectBtn.textContent = "Wallet Connected";
-    } else {
-      alert("Please install MetaMask!");
-    }
-  } catch (error) {
-    console.error("Wallet connection failed:", error);
-  }
-};
-
-resetBtn.onclick = () => {
-  initGrid();
-  displayLeaderboard(); // update leaderboard on reset too
-};
+const status = document.getElementById("status");
 
 function initGrid() {
   grid = Array(size)
@@ -39,18 +17,17 @@ function initGrid() {
   drawGrid();
   score = 0;
   updateScore();
-  displayLeaderboard(); // show leaderboard when game starts
 }
 
 function addRandomTile() {
-  let empty = [];
+  const empty = [];
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
       if (grid[r][c] === 0) empty.push([r, c]);
     }
   }
   if (empty.length === 0) return false;
-  let [r, c] = empty[Math.floor(Math.random() * empty.length)];
+  const [r, c] = empty[Math.floor(Math.random() * empty.length)];
   grid[r][c] = Math.random() < 0.9 ? 2 : 4;
   return true;
 }
@@ -89,8 +66,8 @@ function slide(row) {
   return arr;
 }
 
-function arraysEqual(arr1, arr2) {
-  return arr1.length === arr2.length && arr1.every((v, i) => v === arr2[i]);
+function arraysEqual(a, b) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 function moveLeft() {
@@ -98,7 +75,7 @@ function moveLeft() {
   for (let r = 0; r < size; r++) {
     const original = [...grid[r]];
     grid[r] = slide(grid[r]);
-    if (!moved && !arraysEqual(original, grid[r])) moved = true;
+    if (!arraysEqual(original, grid[r])) moved = true;
   }
   return moved;
 }
@@ -108,7 +85,7 @@ function moveRight() {
   for (let r = 0; r < size; r++) {
     const original = [...grid[r]];
     grid[r] = slide([...grid[r]].reverse()).reverse();
-    if (!moved && !arraysEqual(original, grid[r])) moved = true;
+    if (!arraysEqual(original, grid[r])) moved = true;
   }
   return moved;
 }
@@ -116,12 +93,11 @@ function moveRight() {
 function moveUp() {
   let moved = false;
   for (let c = 0; c < size; c++) {
-    let col = [];
-    for (let r = 0; r < size; r++) col.push(grid[r][c]);
+    const col = grid.map((row) => row[c]);
     const original = [...col];
     const newCol = slide(col);
-    for (let r = 0; r < size; r++) grid[r][c] = newCol[r];
-    if (!moved && !arraysEqual(original, newCol)) moved = true;
+    newCol.forEach((val, i) => (grid[i][c] = val));
+    if (!arraysEqual(original, newCol)) moved = true;
   }
   return moved;
 }
@@ -129,12 +105,11 @@ function moveUp() {
 function moveDown() {
   let moved = false;
   for (let c = 0; c < size; c++) {
-    let col = [];
-    for (let r = 0; r < size; r++) col.push(grid[r][c]);
+    const col = grid.map((row) => row[c]);
     const original = [...col];
     const newCol = slide([...col].reverse()).reverse();
-    for (let r = 0; r < size; r++) grid[r][c] = newCol[r];
-    if (!moved && !arraysEqual(original, newCol)) moved = true;
+    newCol.forEach((val, i) => (grid[i][c] = val));
+    if (!arraysEqual(original, newCol)) moved = true;
   }
   return moved;
 }
@@ -143,10 +118,6 @@ function gameOver() {
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
       if (grid[r][c] === 0) return false;
-    }
-  }
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
       if (c < size - 1 && grid[r][c] === grid[r][c + 1]) return false;
       if (r < size - 1 && grid[r][c] === grid[r + 1][c]) return false;
     }
@@ -154,33 +125,41 @@ function gameOver() {
   return true;
 }
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", async (e) => {
   let moved = false;
+  let direction = "";
+
   switch (e.key) {
     case "ArrowLeft":
       moved = moveLeft();
+      direction = "left";
       break;
     case "ArrowRight":
       moved = moveRight();
+      direction = "right";
       break;
     case "ArrowUp":
       moved = moveUp();
+      direction = "up";
       break;
     case "ArrowDown":
       moved = moveDown();
+      direction = "down";
       break;
   }
+
   if (moved) {
     addRandomTile();
     drawGrid();
     updateScore();
     if (gameOver()) {
+      saveScore(score);  // <-- save the score to leaderboard when game ends
       alert("Game Over! Score: " + score);
-      saveScore(score);        // from leaderboard.js
-      displayLeaderboard();    // from leaderboard.js
     }
+    await sendMove(direction); // send to blockchain
   }
 });
 
-// Initialize grid and leaderboard on page load
-initGrid();
+resetBtn.onclick = initGrid;
+
+window.addEventListener("load", initGrid);

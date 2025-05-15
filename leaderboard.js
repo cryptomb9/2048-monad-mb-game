@@ -33,3 +33,6 @@ function displayLeaderboard() {
   });
   container.appendChild(list);
 }
+window.addEventListener("DOMContentLoaded", () => {
+  displayLeaderboard();
+});
