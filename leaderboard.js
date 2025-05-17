@@ -1,30 +1,72 @@
-const LB_KEY = "2048_leaderboard";
-const lbDiv  = document.getElementById("leaderboard");
+// Firebase import & config
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  onValue,
+  child
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-function readBoard()  { return JSON.parse(localStorage.getItem(LB_KEY) || "{}"); }
-function writeBoard(o){ localStorage.setItem(LB_KEY, JSON.stringify(o)); }
+// Replace these with your Firebase project's config
+const firebaseConfig = {
+  apiKey: "AIzaSyBIGbIRhgKYQjQB1WjpLjxXEDUHHYWrePM",
+  authDomain: "project-mb2048.firebaseapp.com",
+  projectId: "project-mb2048",
+  storageBucket: "project-mb2048.firebasestorage.app",
+  messagingSenderId: "606442481491",
+  appId: "1:606442481491:web:9ed706ef063e812229e3a6",
+  measurementId: "G-2TD99RHYE7"
+};
 
-export function saveScore(score) {
-  if (!window.currentAcc) return;
-  const w = window.currentAcc.toLowerCase();
-  const b = readBoard();
-  b[w] = (b[w] || 0) + score;
-  writeBoard(b);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Save score to Firebase leaderboard
+export async function saveScore(score) {
+  const wallet = window.currentAcc;
+  if (!wallet) return;
+
+  const walletKey = wallet.toLowerCase();
+
+  const dbRef = ref(db, "leaderboard/" + walletKey);
+  const snapshot = await get(dbRef);
+  const prevScore = snapshot.exists() ? snapshot.val().score : 0;
+  const newScore = prevScore + score;
+
+  await set(dbRef, {
+    wallet: walletKey,
+    score: newScore
+  });
+
   renderBoard();
 }
 
+// Render leaderboard from Firebase
 export function renderBoard() {
+  const lbDiv = document.getElementById("leaderboard");
   if (!lbDiv) return;
-  const top = Object.entries(readBoard())
-    .sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-  lbDiv.innerHTML = "<h3>🏆 Leaderboard</h3>";
-  const ol = document.createElement("ol");
-  top.forEach(([w,s])=>{
-    const li = document.createElement("li");
-    li.textContent = `${w.slice(0,6)}…${w.slice(-4)} — ${s}`;
-    ol.appendChild(li);
+  const dbRef = ref(db, "leaderboard");
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    const top = Object.entries(data)
+      .sort(([, a], [, b]) => b.score - a.score)
+      .slice(0, 10);
+
+    lbDiv.innerHTML = "<h3>🏆 Leaderboard</h3>";
+    const ol = document.createElement("ol");
+    top.forEach(([wallet, entry]) => {
+      const li = document.createElement("li");
+      li.textContent = `${wallet.slice(0, 6)}…${wallet.slice(-4)} — ${entry.score}`;
+      ol.appendChild(li);
+    });
+    lbDiv.appendChild(ol);
   });
-  lbDiv.appendChild(ol);
 }
+
+// Auto-render on load
 renderBoard();
