@@ -11,9 +11,9 @@
   <h1>2048 Game</h1>
   <div id="score">Score: 0</div>
 
-  <!-- wallet + reset -->
   <button id="connect-wallet" class="btn">🔗 Connect Wallet</button>
-  <button id="reset-game" class="btn">🔁 Reset Game</button>
+  <button id="reset-game"   class="btn">🔁 Reset Game</button>
+  <button id="end-game"     class="btn">⏹ End Game</button>
 
   <!-- slide-in leaderboard toggle -->
   <button id="lb-btn">Leaderboard</button>
@@ -21,22 +21,19 @@
   <!-- game grid -->
   <div id="game-container"></div>
 
-  <!-- leaderboard panel (hidden by default, slides in) -->
+  <!-- leaderboard panel -->
   <div id="leaderboard"></div>
 
-  <!-- wallet / game status -->
   <p id="status">🔌 Not connected</p>
 
-  <!-- libraries & scripts -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
-  <script src="web3.min.js"></script>
+  <script src="web3.js"></script>
   <script src="leaderboard.js"></script>
-  <script src="game.js"></script>
+  <script src="game.js" type="module"></script>
 
-  <!-- tiny toggle handler -->
   <script>
-    document.getElementById("lb-btn").onclick = () =>
-      document.getElementById("leaderboard").classList.toggle("open");
+    document.getElementById("lb-btn").onclick =
+      () => document.getElementById("leaderboard").classList.toggle("open");
   </script>
 </body>
 </html>

@@ -1,124 +1,69 @@
-/* ───────── Global ───────── */
 :root {
-  --monad-purple: #b19bff;      /* light-purple base */
-  --monad-purple-dark: #9a82ff; /* darker shade */
-  --tile-text: #3c365e;
+  --deep-purple: #8232ff;
+  --deep-purple-light: #9a5eff;
+  --tile-text: #fff;
 }
 
 body {
   font-family: "Segoe UI", Arial, sans-serif;
+  background: #faf8ef;
   text-align: center;
-  background: #f4f2fb;
   margin: 0;
 }
 
-h1 {
-  color: var(--monad-purple-dark);
-  letter-spacing: 0.5px;
-  margin: 24px 0 12px;
-}
+h1 { color: #776e65; margin: 24px 0 12px; }
 
-/* ───────── Buttons ───────── */
 .btn {
   margin: 10px;
   font-size: 16px;
   padding: 10px 22px;
-  background: var(--monad-purple);
+  background: var(--deep-purple);
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s;
 }
-.btn:active { transform: scale(0.97); }
-.btn[disabled] {
-  background: #b9b9b9;
-  cursor: not-allowed;
-}
+.btn:active { transform: scale(.97); }
 
-#connect-wallet.btn { background: var(--monad-purple-dark); }
-
-/* ───────── Game board ───────── */
 #game-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  background: var(--monad-purple-dark);
+  background: #bbada0;          /* original board color */
   padding: 12px;
   border-radius: 12px;
   margin: 20px auto;
   width: 92%;
   max-width: 420px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.12);
 }
 
 .tile {
   width: 100%;
   aspect-ratio: 1/1;
-  background: #e8e4ff;
+  background: var(--deep-purple-light);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-size: 22px;
   font-weight: 600;
-  border-radius: 6px;
   color: var(--tile-text);
+  border-radius: 6px;
 }
 
-/* tile colors */
-.tile[data-value="2"]   { background:#ece9ff; }
-.tile[data-value="4"]   { background:#e1d9ff; }
-.tile[data-value="8"]   { background:#d5c4ff; }
-.tile[data-value="16"]  { background:#cab2ff; }
-.tile[data-value="32"]  { background:#be9dff; color:#fff; }
-.tile[data-value="64"]  { background:#b18aff; color:#fff; }
-.tile[data-value="128"] { background:#a673ff; color:#fff; }
-.tile[data-value="256"] { background:#9a5eff; color:#fff; }
-.tile[data-value="512"] { background:#8e46ff; color:#fff; }
-.tile[data-value="1024"]{ background:#8232ff; color:#fff; }
-.tile[data-value="2048"]{ background:#771dff; color:#fff; }
-
-#status {
-  margin-top: 12px;
-  font-weight: 600;
-  color: #4d476d;
-}
-
-/* ───────── Leaderboard slide-in ───────── */
+/* leaderboard slide panel */
 #lb-btn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  background: var(--monad-purple-dark);
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  padding: 8px 16px;
-  cursor: pointer;
-  z-index: 1000;
+  position: fixed; top: 16px; right: 16px;
+  background: var(--deep-purple);
+  color: #fff; border: none; border-radius: 50px;
+  padding: 8px 16px; cursor: pointer; z-index: 1000;
 }
-
 #leaderboard {
-  position: fixed;
-  top: 0;
-  right: -320px;             /* hidden off-screen */
-  width: 280px;
-  height: 100%;
-  background: #fff;
-  box-shadow: -4px 0 12px rgba(0,0,0,.15);
-  padding: 20px;
-  overflow-y: auto;
-  transition: right 0.25s;
-  z-index: 999;
+  position: fixed; top: 0; right: -320px;
+  width: 280px; height: 100%;
+  background: #fff; box-shadow: -4px 0 12px rgba(0,0,0,.15);
+  padding: 20px; overflow-y: auto; transition: right .25s; z-index: 999;
 }
 #leaderboard.open { right: 0; }
-
-#leaderboard h3 { margin-top: 0; color: var(--monad-purple-dark); }
+#leaderboard h3 { margin-top: 0; color: var(--deep-purple); }
 #leaderboard ol { padding-left: 20px; text-align: left; }
 #leaderboard li { margin: 6px 0; font-size: 15px; }
-
-/* ───────── Mobile tweaks ───────── */
-@media (max-width: 480px) {
-  .btn { font-size: 14px; padding: 8px 18px; }
-  #game-container { max-width: 340px; }
-}
