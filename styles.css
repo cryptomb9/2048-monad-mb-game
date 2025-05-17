@@ -1,69 +1,87 @@
-:root {
-  --deep-purple: #8232ff;
-  --deep-purple-light: #9a5eff;
-  --tile-text: #fff;
-}
-
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #faf8ef;
+  font-family: Arial, sans-serif;
   text-align: center;
+  background-color: #faf8ef;
   margin: 0;
+  padding: 0;
 }
 
-h1 { color: #776e65; margin: 24px 0 12px; }
+header {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
 
-.btn {
+h1 {
+  color: #776e65;
+  margin-top: 60px;
+}
+
+#score, #reset-game, #toggle-leaderboard {
   margin: 10px;
-  font-size: 16px;
-  padding: 10px 22px;
-  background: var(--deep-purple);
-  color: #fff;
+  font-size: 18px;
+  padding: 10px 20px;
+  background-color: #bbada0;
+  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
 }
-.btn:active { transform: scale(.97); }
+
+#connect-wallet {
+  background-color: #bbada0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#connect-wallet:disabled {
+  background-color: #8c8c8c;
+  cursor: not-allowed;
+}
 
 #game-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  background: #bbada0;          /* original board color */
-  padding: 12px;
-  border-radius: 12px;
+  grid-gap: 10px;
+  background-color: #bbada0; /* original board color */
+  padding: 10px;
+  border-radius: 10px;
   margin: 20px auto;
-  width: 92%;
-  max-width: 420px;
+  width: 90%;
+  max-width: 440px;
+  box-sizing: border-box;
 }
 
 .tile {
   width: 100%;
-  aspect-ratio: 1/1;
-  background: var(--deep-purple-light);
+  aspect-ratio: 1 / 1;
+  background-color: #5D3A8A; /* deep purple tile */
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--tile-text);
-  border-radius: 6px;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 5px;
+  color: white;
 }
 
-/* leaderboard slide panel */
-#lb-btn {
-  position: fixed; top: 16px; right: 16px;
-  background: var(--deep-purple);
-  color: #fff; border: none; border-radius: 50px;
-  padding: 8px 16px; cursor: pointer; z-index: 1000;
+#status {
+  margin-top: 10px;
+  color: #333;
+  font-weight: bold;
 }
-#leaderboard {
-  position: fixed; top: 0; right: -320px;
-  width: 280px; height: 100%;
-  background: #fff; box-shadow: -4px 0 12px rgba(0,0,0,.15);
-  padding: 20px; overflow-y: auto; transition: right .25s; z-index: 999;
+
+#leaderboard-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #aaa;
+  margin-top: 20px;
+  text-align: left;
 }
-#leaderboard.open { right: 0; }
-#leaderboard h3 { margin-top: 0; color: var(--deep-purple); }
-#leaderboard ol { padding-left: 20px; text-align: left; }
-#leaderboard li { margin: 6px 0; font-size: 15px; }

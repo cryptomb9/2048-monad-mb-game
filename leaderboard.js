@@ -1,4 +1,3 @@
-// Firebase import & config
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getDatabase,
@@ -6,10 +5,11 @@ import {
   set,
   get,
   onValue,
-  child
+  child,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-// Replace these with your Firebase project's config
+// Your Firebase config here:
 const firebaseConfig = {
   apiKey: "AIzaSyBIGbIRhgKYQjQB1WjpLjxXEDUHHYWrePM",
   authDomain: "project-mb2048.firebaseapp.com",
@@ -23,21 +23,47 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Save score to Firebase leaderboard
-export async function saveScore(score) {
+const lbDiv = document.getElementById("leaderboard-container");
+
+// Save score securely with signature and optional nickname
+export async function saveScore(score, nickname, signature, message) {
   const wallet = window.currentAcc;
   if (!wallet) return;
 
   const walletKey = wallet.toLowerCase();
 
+  // Verify signature off-chain before saving (you can improve by sending to a backend for more security)
+  if (!signature || !message) {
+    console.warn("Missing signature or message for saveScore");
+    return;
+  }
+
+  try {
+    // Use ethers.js to verify signature
+    const ethers = window.ethers;
+    const signerAddr = ethers.utils.verifyMessage(message, signature);
+    if (signerAddr.toLowerCase() !== walletKey) {
+      console.warn("Signature verification failed.");
+      return;
+    }
+  } catch (err) {
+    console.warn("Signature verification error:", err);
+    return;
+  }
+
+  // Fetch previous data
   const dbRef = ref(db, "leaderboard/" + walletKey);
   const snapshot = await get(dbRef);
-  const prevScore = snapshot.exists() ? snapshot.val().score : 0;
-  const newScore = prevScore + score;
+  const prevEntry = snapshot.exists() ? snapshot.val() : { score: 0, nickname: "" };
+
+  const newScore = prevEntry.score + score;
+  const newNickname = nickname?.trim() || prevEntry.nickname || walletKey.slice(0,6);
 
   await set(dbRef, {
     wallet: walletKey,
-    score: newScore
+    score: newScore,
+    nickname: newNickname,
+    updatedAt: serverTimestamp(),
   });
 
   renderBoard();
@@ -45,13 +71,15 @@ export async function saveScore(score) {
 
 // Render leaderboard from Firebase
 export function renderBoard() {
-  const lbDiv = document.getElementById("leaderboard");
   if (!lbDiv) return;
 
   const dbRef = ref(db, "leaderboard");
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
-    if (!data) return;
+    if (!data) {
+      lbDiv.innerHTML = "<p>No leaderboard data yet.</p>";
+      return;
+    }
 
     const top = Object.entries(data)
       .sort(([, a], [, b]) => b.score - a.score)
@@ -61,12 +89,18 @@ export function renderBoard() {
     const ol = document.createElement("ol");
     top.forEach(([wallet, entry]) => {
       const li = document.createElement("li");
-      li.textContent = `${wallet.slice(0, 6)}…${wallet.slice(-4)} — ${entry.score}`;
+      li.textContent = `${entry.nickname || wallet.slice(0, 6)} — ${entry.score}`;
       ol.appendChild(li);
     });
     lbDiv.appendChild(ol);
   });
 }
 
-// Auto-render on load
+// Toggle leaderboard visibility on button click
+document.getElementById("toggle-leaderboard").addEventListener("click", () => {
+  if (!lbDiv) return;
+  lbDiv.style.display = lbDiv.style.display === "none" ? "block" : "none";
+});
+
+// Initial render
 renderBoard();

@@ -2,38 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2048 Monad Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2048 Game</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
+
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+    <button id="connect-wallet">🔗 Connect Wallet</button>
+    <button id="toggle-leaderboard">Leaderboard 🏆</button>
+  </header>
+
   <h1>2048 Game</h1>
   <div id="score">Score: 0</div>
 
-  <button id="connect-wallet" class="btn">🔗 Connect Wallet</button>
-  <button id="reset-game"   class="btn">🔁 Reset Game</button>
-  <button id="end-game"     class="btn">⏹ End Game</button>
+  <button id="reset-game">🔁 Reset Game</button>
 
-  <!-- slide-in leaderboard toggle -->
-  <button id="lb-btn">Leaderboard</button>
-
-  <!-- game grid -->
   <div id="game-container"></div>
 
-  <!-- leaderboard panel -->
-  <div id="leaderboard"></div>
+  <div id="leaderboard-container" style="display:none; max-width: 600px; margin: 20px auto;"></div>
 
   <p id="status">🔌 Not connected</p>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
-  <script src="web3.js"></script>
-  <script src="leaderboard.js"></script>
-  <script src="game.js" type="module"></script>
+  <script src="web3.min.js"></script>
+  <script type="module" src="leaderboard.js"></script>
+  <script type="module" src="game.js"></script>
 
-  <script>
-    document.getElementById("lb-btn").onclick =
-      () => document.getElementById("leaderboard").classList.toggle("open");
-  </script>
 </body>
-</html>
