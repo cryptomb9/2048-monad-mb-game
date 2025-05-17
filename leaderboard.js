@@ -1,38 +1,39 @@
-// leaderboard.js
+/* ═════════ leaderboard.js ══════════════════════
+   Keeps a running total per wallet in localStorage
+   and renders a top-10 list inside #leaderboard.
+   saveScore(score) is exposed globally.
+================================================*/
+const LB_KEY = "2048_leaderboard";
+const lbDiv  = document.getElementById("leaderboard");
 
-const leaderboardKey = "2048_leaderboard";
-
-function getLeaderboard() {
-  const data = localStorage.getItem(leaderboardKey);
-  return data ? JSON.parse(data) : [];
+function getBoard() {
+  return JSON.parse(localStorage.getItem(LB_KEY) || "{}");
 }
-
-function saveScore(score) {
-  let leaderboard = getLeaderboard();
-  leaderboard.push({ score, date: new Date().toISOString() });
-  // Sort descending and keep top 5
-  leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 5);
-  localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
+function setBoard(obj) {
+  localStorage.setItem(LB_KEY, JSON.stringify(obj));
 }
+window.saveScore = function (score) {
+  if (!window.currentAcc) return;
+  const w = window.currentAcc.toLowerCase();
+  const board = getBoard();
+  board[w] = (board[w] || 0) + score;
+  setBoard(board);
+  renderBoard();
+};
+function renderBoard() {
+  if (!lbDiv) return;
+  const board = getBoard();
+  const top = Object.entries(board)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
 
-function displayLeaderboard() {
-  const leaderboard = getLeaderboard();
-  const container = document.getElementById("leaderboard-container");
-  if (!container) return;
-  container.innerHTML = "<h2>Leaderboard (Top 5)</h2>";
-  if (leaderboard.length === 0) {
-    container.innerHTML += "<p>No scores yet.</p>";
-    return;
-  }
-  const list = document.createElement("ol");
-  leaderboard.forEach(entry => {
-    const item = document.createElement("li");
-    const date = new Date(entry.date).toLocaleDateString();
-    item.textContent = `${entry.score} points (${date})`;
-    list.appendChild(item);
+  lbDiv.innerHTML = "<h3>🏆 Leaderboard</h3>";
+  const ol = document.createElement("ol");
+  top.forEach(([w, s]) => {
+    const li = document.createElement("li");
+    li.textContent = `${w.slice(0, 6)}…${w.slice(-4)} — ${s}`;
+    ol.appendChild(li);
   });
-  container.appendChild(list);
+  lbDiv.appendChild(ol);
 }
-window.addEventListener("DOMContentLoaded", () => {
-  displayLeaderboard();
-});
+renderBoard();
