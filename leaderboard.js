@@ -14,7 +14,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBIGbIRhgKYQjQB1WjpLjxXEDUHHYWrePM",
   authDomain: "project-mb2048.firebaseapp.com",
   projectId: "project-mb2048",
-  storageBucket: "project-mb2048.firebasestorage.app",
+  storageBucket: "project-mb2048.appspot.com",
   messagingSenderId: "606442481491",
   appId: "1:606442481491:web:9ed706ef063e812229e3a6",
   measurementId: "G-2TD99RHYE7"

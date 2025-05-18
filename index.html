@@ -4,29 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2048 Game</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
 
-  <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+  <!-- 1)  CSS  -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- 2)  Ethers.js – MUST load BEFORE web3.js  -->
+  <script
+    src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js"
+    type="application/javascript">
+  </script>
+
+  <!-- 3)  Wallet / contract helper (classic script)  -->
+  <script src="web3.min.js"></script>
+</head>
+
+<body>
+  <header style="display:flex;justify-content:space-between;padding:10px">
     <button id="connect-wallet">🔗 Connect Wallet</button>
-    <button id="toggle-leaderboard">Leaderboard 🏆</button>
+    <button id="toggle-leaderboard">🏆 Leaderboard</button>
   </header>
 
   <h1>2048 Game</h1>
   <div id="score">Score: 0</div>
 
   <button id="reset-game">🔁 Reset Game</button>
-
   <div id="game-container"></div>
 
-  <div id="leaderboard-container" style="display:none; max-width: 600px; margin: 20px auto;"></div>
+  <!-- Hidden leaderboard panel -->
+  <div id="leaderboard-container" style="display:none;max-width:600px;margin:20px auto;"></div>
 
   <p id="status">🔌 Not connected</p>
 
-  <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
-  <script src="web3.min.js"></script>
+  <!-- 4)  Your ES-module scripts (can import/export) -->
   <script type="module" src="leaderboard.js"></script>
   <script type="module" src="game.js"></script>
-
 </body>
+</html>
