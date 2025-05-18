@@ -12,7 +12,7 @@ import {
 // Your Firebase config here:
 const firebaseConfig = {
   apiKey: "AIzaSyBIGbIRhgKYQjQB1WjpLjxXEDUHHYWrePM",
-  authDomain: "project-mb2048.firebaseapp.com",
+  authDomain: "https://project-mb2048-default-rtdb.firebaseio.com",
   projectId: "project-mb2048",
   storageBucket: "project-mb2048.appspot.com",
   messagingSenderId: "606442481491",
